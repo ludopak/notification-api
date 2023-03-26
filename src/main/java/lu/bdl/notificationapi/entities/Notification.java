@@ -20,7 +20,7 @@ public class Notification {
   private Integer id;
 
   @Column(name = "event_type", columnDefinition = "varchar(10)")
-  private String enventType;
+  private String eventType;
 
   @Column(name = "message", columnDefinition = "TEXT")
   private String message;

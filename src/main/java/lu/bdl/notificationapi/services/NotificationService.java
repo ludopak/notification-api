@@ -51,7 +51,14 @@ public class NotificationService {
   public Flux<NotificationDTO> streamNotifications(String userID) {
     Flux<NotificationDTO> integerFlux = Flux.create(publisher).delayElements(Duration.ofMillis(1))
         .share();
-    return Flux.concat(notifications(userID), integerFlux);
+    Flux<NotificationDTO> heartbeats = Flux.just(new NotificationDTO().setHeartBeat(true))
+        .repeat()
+        .delayElements(Duration.ofSeconds(5));
+
+    var dataFlux =Flux.concat(notifications(userID), integerFlux);
+
+    return  Flux.merge(dataFlux,
+        heartbeats.takeUntilOther(dataFlux.ignoreElements()));
   }
 
 }

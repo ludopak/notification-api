@@ -9,4 +9,6 @@ public class NotificationDTO {
   private String message;
   private String eventType;
 
+  private Boolean heartBeat;
+
 }
