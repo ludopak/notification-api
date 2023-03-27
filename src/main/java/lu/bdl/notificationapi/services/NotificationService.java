@@ -19,6 +19,8 @@ import reactor.core.publisher.Flux;
 public class NotificationService {
 
   FluxSinkService publisher = new FluxSinkService();
+  Flux<NotificationDTO> notificationFlux = Flux.create(publisher).delayElements(Duration.ofMillis(1)).share();
+
 
   private final NotificationRepository notificationRepository;
   private final NotificationMapper mapper;
@@ -49,13 +51,11 @@ public class NotificationService {
   }
 
   public Flux<NotificationDTO> streamNotifications(String userID) {
-    Flux<NotificationDTO> integerFlux = Flux.create(publisher).delayElements(Duration.ofMillis(1))
-        .share();
     Flux<NotificationDTO> heartbeats = Flux.just(new NotificationDTO().setHeartBeat(true))
         .repeat()
         .delayElements(Duration.ofSeconds(5));
 
-    var dataFlux =Flux.concat(notifications(userID), integerFlux);
+    var dataFlux = Flux.concat(notifications(userID), notificationFlux);
 
     return  Flux.merge(dataFlux,
         heartbeats.takeUntilOther(dataFlux.ignoreElements()));
